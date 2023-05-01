@@ -1,0 +1,24 @@
+{
+  "name": "byfareska/cron-bundle",
+  "type": "symfony-bundle",
+  "description": "Symfony cron",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Karol Szarafinowski",
+      "email": "karol@szarafinowski.pl"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "symfony/framework-bundle": "^3.4|^4.4|^5.0|^6.0"
+  },
+  "require-dev": {
+    "symfony/symfony": ">=4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Byfareska\\Cron\\": "src"
+    }
+  }
+}
