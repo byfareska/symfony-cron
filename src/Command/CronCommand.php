@@ -43,7 +43,7 @@ final class CronCommand extends Command
         $forcedTaskNames = explode(',', $input->getOption('task') ?? '');
 
         $tasks = $hasTaskOption
-            ? array_filter($this->tasks, static fn(ScheduledTask $task) => in_array(get_class($task), $forcedTaskNames, true))
+            ? array_filter([...$this->tasks], static fn(ScheduledTask $task) => in_array(get_class($task), $forcedTaskNames, true))
             : $this->tasks;
 
         $tasksCount = count($tasks);
