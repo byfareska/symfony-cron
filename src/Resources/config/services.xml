@@ -5,8 +5,12 @@
     <services>
         <service id="Byfareska\Cron\Command\CronCommand" public="true">
             <argument type="tagged" tag="cron.task"/>
+            <argument type="service" id="Byfareska\Cron\Lock\LockManager"/>
             <argument type="service" id="Psr\Log\LoggerInterface" on-invalid="null"/>
             <tag name="console.command"/>
+        </service>
+        <service id="Byfareska\Cron\Lock\LockManager">
+            <argument>%kernel.project_dir%</argument>
         </service>
     </services>
 </container>

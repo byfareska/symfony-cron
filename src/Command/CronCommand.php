@@ -2,6 +2,8 @@
 
 namespace Byfareska\Cron\Command;
 
+use Byfareska\Cron\Lock\LockManager;
+use Byfareska\Cron\Task\LockableScheduledTask;
 use Byfareska\Cron\Task\ScheduledTask;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
@@ -18,18 +20,17 @@ final class CronCommand extends Command
     private const DEFAULT_NAME = 'cron:run';
     protected static $defaultName = self::DEFAULT_NAME;
     private iterable $tasks;
-    private ?LoggerInterface $logger;
 
     /**
      * @param iterable<ScheduledTask> $tasks
      */
     public function __construct(
         iterable $tasks,
-        ?LoggerInterface $logger = null,
+        private LockManager $lockManager,
+        private ?LoggerInterface $logger = null,
         string $name = null
     )
     {
-        $this->logger = $logger;
         $this->tasks = $tasks;
         parent::__construct($name);
         $this->addOption('task', 't', InputOption::VALUE_OPTIONAL, 'Force to execute specific task (ignore schedule). You should put as argument value task class name.');
@@ -55,8 +56,14 @@ final class CronCommand extends Command
         foreach ($tasks as $task) {
             $output->write(sprintf('[%d/%d] Calling %s... ', ++$i, $tasksCount, get_class($task)));
             $started = round(microtime(true) * 1000);
+            $hasLock = $task instanceof LockableScheduledTask && $task->skipIfLocked();
 
             try {
+                if ($hasLock && $this->lockManager->isLockedThenLock($task)) {
+                    $output->writeln('skipped (locked).');
+                    continue;
+                }
+
                 if ($task->cronInvoke($now, $hasTaskOption, $output)) {
                     $output->writeln(sprintf(
                         'Executed in %ss.',
@@ -74,6 +81,8 @@ final class CronCommand extends Command
 
                 $this->logger->error("[CRON] {$e->getMessage()}", ['details' => $e]);
             }
+
+            $this->lockManager->unlock($task);
         }
 
         return Command::SUCCESS;
