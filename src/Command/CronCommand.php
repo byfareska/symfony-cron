@@ -82,7 +82,7 @@ final class CronCommand extends Command
                 $this->logger->error("[CRON] {$e->getMessage()}", ['details' => $e]);
             }
 
-            $this->lockManager->unlock($task);
+            $task instanceof LockableScheduledTask && $this->lockManager->unlock($task);
         }
 
         return Command::SUCCESS;
