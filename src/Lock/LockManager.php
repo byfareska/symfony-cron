@@ -12,22 +12,22 @@ final class LockManager
     {
     }
 
-    public function isLocked(LockableScheduledTask $task): bool
+    public function isLocked(LockableScheduledTask|string $task): bool
     {
         return file_exists($this->toLockPath($task));
     }
 
-    public function lock(LockableScheduledTask $task): void
+    public function lock(LockableScheduledTask|string $task): void
     {
         file_put_contents($this->toLockPath($task), time());
     }
 
-    public function unlock(LockableScheduledTask $task): void
+    public function unlock(LockableScheduledTask|string $task): void
     {
         unlink($this->toLockPath($task));
     }
 
-    public function isLockedThenLock(LockableScheduledTask $task): bool
+    public function isLockedThenLock(LockableScheduledTask|string $task): bool
     {
         $path = $this->toLockPath($task);
         $isLocked = file_exists($path);
@@ -36,12 +36,12 @@ final class LockManager
         return $isLocked;
     }
 
-    public function toLockPath(LockableScheduledTask $task): string
+    public function toLockPath(LockableScheduledTask|string $task): string
     {
         return sprintf(
             '%s/var/cron-%s.lock',
             $this->projectDir,
-            preg_replace('/[^A-Za-z0-9 ]/', '_', $task::class)
+            preg_replace('/[^A-Za-z0-9 ]/', '_', is_string($task) ? $task : $task::class)
         );
     }
 }
