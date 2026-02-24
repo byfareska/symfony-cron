@@ -1,5 +1,10 @@
 # Cron bundle
 
+## Requirements
+
+- PHP >= 8.2
+- Symfony 6.1, 7.x, or 8.x
+
 ## Fast setup
 
 1. Add to cron `* * * * * php bin/console cron:run`

@@ -14,25 +14,19 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
-#[AsCommand(name: self::DEFAULT_NAME, description: 'Run crontab, you can use -t option to run specific task.')]
+#[AsCommand(name: 'cron:run', description: 'Run crontab, you can use -t option to run specific task.')]
 final class CronCommand extends Command
 {
-    private const DEFAULT_NAME = 'cron:run';
-    protected static $defaultName = self::DEFAULT_NAME;
-    private iterable $tasks;
-
     /**
      * @param iterable<ScheduledTask> $tasks
      */
     public function __construct(
-        iterable $tasks,
+        private iterable $tasks,
         private LockManager $lockManager,
         private ?LoggerInterface $logger = null,
-        string $name = null
     )
     {
-        $this->tasks = $tasks;
-        parent::__construct($name);
+        parent::__construct();
         $this->addOption('task', 't', InputOption::VALUE_OPTIONAL, 'Force to execute specific task (ignore schedule). You should put as argument value task class name.');
     }
 
@@ -79,7 +73,7 @@ final class CronCommand extends Command
                     $e->getMessage(),
                 ));
 
-                $this->logger->error("[CRON] {$e->getMessage()}", ['details' => $e]);
+                $this->logger?->error("[CRON] {$e->getMessage()}", ['details' => $e]);
             }
 
             $task instanceof LockableScheduledTask && $this->lockManager->unlock($task);
