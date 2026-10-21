@@ -11,14 +11,21 @@
   ],
   "require": {
     "php": ">=8.2",
-    "symfony/framework-bundle": "^6.1|^7.0|^8.0"
+    "symfony/framework-bundle": "^6.1|^7.0|^8.0",
+    "symfony/lock": "^6.1|^7.0|^8.0"
   },
   "require-dev": {
-    "symfony/symfony": ">=6.1"
+    "symfony/symfony": ">=6.1",
+    "phpunit/phpunit": "^11.5|^12.0"
   },
   "autoload": {
     "psr-4": {
       "Byfareska\\Cron\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Byfareska\\Cron\\Tests\\": "tests/"
     }
   }
 }

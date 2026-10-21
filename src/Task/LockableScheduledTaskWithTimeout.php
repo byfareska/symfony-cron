@@ -3,21 +3,13 @@
 namespace Byfareska\Cron\Task;
 
 /**
- * Extends LockableScheduledTask with a custom stale-lock timeout.
- *
- * By default, LockManager considers a lock stale after 3600 seconds.
- * Implement this interface to override that threshold per task — useful for
- * tasks that legitimately run longer (or shorter) than one hour.
- *
- * When posix_getpgid() is available, the PID stored in the lock file is checked
- * first: a dead process means the lock is stale regardless of age. The timeout
- * is then used as a safety net against PID reuse.
+ * @deprecated since 1.5.0, locks are released by the OS when the holding process dies,
+ *             so a stale-lock timeout is no longer needed. lockMaxAgeSeconds() is ignored.
  */
 interface LockableScheduledTaskWithTimeout extends LockableScheduledTask
 {
     /**
-     * @return int Maximum number of seconds a lock is considered valid.
-     *             Locks older than this are treated as leftovers from a crashed process.
+     * @return int Ignored since 1.5.0.
      */
     public function lockMaxAgeSeconds(): int;
 }
